@@ -32,7 +32,6 @@
 #import "SinusBarChartViewController.h"
 #import "PositiveNegativeBarChartViewController.h"
 #import "BubbleChartViewController.h"
-#import "RealmDemoListViewController.h"
 
 @interface DemoListViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -150,11 +149,6 @@
                           @"subtitle": @"This demonstrates how to create a BarChart with positive and negative values in different colors.",
                           @"class": PositiveNegativeBarChartViewController.class
                           },
-                      @{
-                          @"title": @"Realm.io database",
-                          @"subtitle": @"This demonstrates how to use this library with Realm.io mobile database.",
-                          @"class": RealmDemoListViewController.class
-                          }
                       ];
 }
 
