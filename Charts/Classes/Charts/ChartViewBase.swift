@@ -125,8 +125,13 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
     /// if set to true, the marker is drawn when a value is clicked
     open var drawMarkers = true
     
+    open var drawCustomHighlight: Bool = true
+    
     /// the view that represents the marker
     open var marker: ChartMarker?
+    
+    // The view for the custom item on highlighting
+    open var customHightlightItem: ChartMarker?
     
     private var _interceptTouchEvents = false
     
@@ -524,47 +529,59 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
     
     /// The last value that was highlighted via touch.
     open var lastHighlighted: ChartHighlight?
-  
+    
     // MARK: - Markers
 
     /// draws all MarkerViews on the highlighted positions
     internal func drawMarkers(context: CGContext)
     {
-        // if there is no marker view or drawing marker is disabled
-        if (marker === nil || !drawMarkers || !valuesToHighlight())
-        {
-            return
-        }
-
-        for i in 0 ..< _indicesToHighlight.count
-        {
-            let highlight = _indicesToHighlight[i]
-            let xIndex = highlight.xIndex
-
-            let deltaX = _xAxis?.axisRange ?? (Double(_data?.xValCount ?? 0) - 1)
-            if xIndex <= Int(deltaX) && xIndex <= Int(CGFloat(deltaX) * _animator.phaseX)
+        drawHighlight(context: context, markerItem: marker, isDrawEnabled: drawMarkers);
+    }
+    
+    // MARK: - CustomHighlight
+    
+    // Draws a custom view on highlight
+    internal func drawCustomHighlight(context: CGContext)
+    {
+        drawHighlight(context: context, markerItem: customHightlightItem, isDrawEnabled: drawCustomHighlight);
+    }
+    
+    // MARK: - DrawHighlight
+    
+    // Draws the highlight for the required item.
+    internal func drawHighlight(context: CGContext, markerItem: ChartMarker?, isDrawEnabled: Bool){
+        if (markerItem != nil && isDrawEnabled && valuesToHighlight()){
+            for i in 0 ..< _indicesToHighlight.count
             {
-                let e = _data?.getEntryForHighlight(highlight)
-                if (e === nil || e!.xIndex != highlight.xIndex)
-                {
-                    continue
-                }
+                let highlight = _indicesToHighlight[i]
+                let xIndex = highlight.xIndex
                 
-                let pos = getMarkerPosition(entry: e!, highlight: highlight)
-
-                // check bounds
-                if (!_viewPortHandler.isInBounds(x: pos.x, y: pos.y))
+                let deltaX = _xAxis?.axisRange ?? (Double(_data?.xValCount ?? 0) - 1)
+                if xIndex <= Int(deltaX) && xIndex <= Int(CGFloat(deltaX) * _animator.phaseX)
                 {
-                    continue
+                    let e = _data?.getEntryForHighlight(highlight)
+                    if (e === nil || e!.xIndex != highlight.xIndex)
+                    {
+                        continue
+                    }
+                    
+                    let pos = getMarkerPosition(entry: e!, highlight: highlight)
+                    
+                    // check bounds
+                    if (!_viewPortHandler.isInBounds(x: pos.x, y: pos.y))
+                    {
+                        continue
+                    }
+                    
+                    // callbacks to update the content
+                    markerItem!.refreshContent(entry: e!, highlight: highlight)
+                    
+                    markerItem!.draw(context: context, point: pos)
                 }
-
-                // callbacks to update the content
-                marker!.refreshContent(entry: e!, highlight: highlight)
-                
-                marker!.draw(context: context, point: pos)
             }
         }
     }
+
     
     /// - returns: the actual position in pixels of the MarkerView for the given Entry in the given DataSet.
     open func getMarkerPosition(entry: ChartDataEntry, highlight: ChartHighlight) -> CGPoint

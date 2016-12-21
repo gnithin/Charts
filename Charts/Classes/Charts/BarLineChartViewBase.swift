@@ -275,6 +275,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         // drawLegend()
 
         drawMarkers(context: context)
+        
+        drawCustomHighlight(context: context);
 
         drawDescription(context: context)
     }
