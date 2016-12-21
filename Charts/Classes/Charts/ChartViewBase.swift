@@ -535,7 +535,11 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
     /// draws all MarkerViews on the highlighted positions
     internal func drawMarkers(context: CGContext)
     {
-        drawHighlight(context: context, markerItem: marker, isDrawEnabled: drawMarkers);
+        drawHighlight(
+            context: context,
+            markerItem: marker,
+            isDrawEnabled: drawMarkers
+        );
     }
     
     // MARK: - CustomHighlight
@@ -543,13 +547,21 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
     // Draws a custom view on highlight
     internal func drawCustomHighlight(context: CGContext)
     {
-        drawHighlight(context: context, markerItem: customHightlightItem, isDrawEnabled: drawCustomHighlight);
+        drawHighlight(
+            context: context,
+            markerItem: customHightlightItem,
+            isDrawEnabled: drawCustomHighlight
+        );
     }
     
     // MARK: - DrawHighlight
     
     // Draws the highlight for the required item.
-    internal func drawHighlight(context: CGContext, markerItem: ChartMarker?, isDrawEnabled: Bool){
+    internal func drawHighlight(
+        context: CGContext,
+        markerItem: ChartMarker?,
+        isDrawEnabled: Bool
+    ){
         if (markerItem != nil && isDrawEnabled && valuesToHighlight()){
             for i in 0 ..< _indicesToHighlight.count
             {
@@ -573,8 +585,8 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
                         continue
                     }
                     
-                    // callbacks to update the content
                     markerItem!.refreshContent(entry: e!, highlight: highlight)
+                    markerItem!.preDraw(chartData: _data, highlight: highlight);
                     
                     markerItem!.draw(context: context, point: pos)
                 }

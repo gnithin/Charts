@@ -66,4 +66,11 @@ open class ChartMarker: NSObject
     {
         // Do nothing here...
     }
+    
+    // This shares the chart data with the client to perform necessary changes before the drawing start.
+    open func preDraw(chartData: ChartData?, highlight: ChartHighlight)
+    {
+        // This is just an empty stub...
+    }
+
 }
